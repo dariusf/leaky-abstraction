@@ -1,1 +1,0 @@
-this.shove(this.x - me.x, this.y - me.y);

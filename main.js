@@ -16,7 +16,6 @@ var Main = (function() {
         game.load.image('panel_buttons', 'assets/panel_buttons.png');
         game.load.spritesheet('balls', 'assets/balls.png', 17, 17);
         game.load.spritesheet('baddie', 'assets/baddie.png', 32, 32);
-        Interpreter.loadScripts(game);
     }
 
     var player;

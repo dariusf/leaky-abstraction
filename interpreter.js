@@ -1,8 +1,20 @@
 var Interpreter = (function() {
 
 	var player, game, fireballGroup;
-	var numberOfScriptsToLoad = 4;
-	var scripts = [];
+	var scripts = [
+	`this.shove(this.x - me.x, this.y - me.y);`,
+	`continuously(function() {
+	me.say("hi!");
+	return true;
+});`,
+	 `me.spells.fire.fireball(me.x, me.y).shove(me.focus.x - me.x, me.focus.y - me.y);`,
+	 `var count = 0;
+continuously(function() {
+  me.spells.fire.fireball(me.x, me.y).shove(me.focus.x - me.x, me.focus.y - me.y);
+  return count++ < 21;
+});`
+	];
+
 	var selectedScript = -1;
 
 	var interpreterRunning = false;
@@ -19,9 +31,9 @@ var Interpreter = (function() {
 		player = p;
 		fireballGroup = fireballs;
 
-		for (var i = 0; i < numberOfScriptsToLoad; i++) {
-			scripts[i] = game.cache.getText('script' + i);
-		}
+		// for (var i = 0; i < numberOfScriptsToLoad; i++) {
+		// 	scripts[i] = game.cache.getText('script' + i);
+		// }
 	}
 
 	function shove(x, y) {
@@ -60,73 +72,70 @@ var Interpreter = (function() {
 		}
 		interpreterRunning = true;
 
-		var interpreter = new Tailspin.Interpreter();
+		let run = (function(code) {
 
-		interpreter.global.me = {
-			get x() {
-				return player.x;
-			},
-			get y() {
-				return player.y;
-			},
-			focus: {
+			let me = {
 				get x() {
-					return game.input.mousePointer.worldX;
+					return player.x;
 				},
 				get y() {
-					return game.input.mousePointer.worldY;
-				}
-			},
-			say: say,
-			spells: {
-				fire: {
-					fireball: function(x, y) {
-						var fireball = fireballGroup.create(x, y, 'balls', [0]);
-						fireball.anchor.setTo(0.5, 0.5);
-						fireball.body.gravity.y = 300;
-						fireball.body.bounce.x = fireball.body.bounce.y = 0.7 + Math.random() * 0.2;
-						fireball.body.collideWorldBounds = true;
+					return player.y;
+				},
+				focus: {
+					get x() {
+						return game.input.mousePointer.worldX;
+					},
+					get y() {
+						return game.input.mousePointer.worldY;
+					}
+				},
+				say: say,
+				spells: {
+					fire: {
+						fireball: function(x, y) {
+							var fireball = fireballGroup.create(x, y, 'balls', [0]);
+							fireball.anchor.setTo(0.5, 0.5);
+							fireball.body.gravity.y = 300;
+							fireball.body.bounce.x = fireball.body.bounce.y = 0.7 + Math.random() * 0.2;
+							fireball.body.collideWorldBounds = true;
 
-						return {
-							shove: function() {
-								shove.apply(fireball, arguments);
-							}
-						};
+							return {
+								shove: function() {
+									shove.apply(fireball, arguments);
+								}
+							};
+						}
 					}
 				}
-			}
-		};
-		interpreter.global.__defineGetter__("x", function() {
-			return target.x
-		});
-		interpreter.global.__defineGetter__("y", function() {
-			return target.y
-		});
-		// interpreter.global.x = target.x;
-		// interpreter.global.y = target.y;
-		interpreter.global.shove = function(x, y) {
-			shove.apply(target, arguments);
-			return interpreter.global;
-		};
-		interpreter.global.continuously = function(f) {
-			asyncRunning = true;
-			function run() {
-				var continueRunning = f();
-				asyncRunning = asyncRunning && continueRunning;
-				if (asyncRunning && continueRunning) {
-					setTimeout(run, 100);
+			};
+
+			function continuously(f) {
+				asyncRunning = true;
+				function run() {
+					var continueRunning = f();
+					asyncRunning = asyncRunning && continueRunning;
+					if (asyncRunning && continueRunning) {
+						setTimeout(run, 100);
+					}
 				}
+				run();
+
+				// return interpreter.global;
 			}
-			run();
 
-			return interpreter.global;
-		};
-
-		// console = {
-		//     log: function(msg) {
-		//         consoleLog(msg, 'log');
-		//     }
-		// };
+			eval(code);
+		}).bind({
+			get x() {
+				return target.x
+			},
+			get y() {
+				return target.y
+			},
+			shove(x, y) {
+				shove.apply(target, arguments);
+				return this;
+			},
+		});
 
 		// Callback functions for evaluation.
 		function returnFn(result) {
@@ -140,33 +149,15 @@ var Interpreter = (function() {
 			interpreter.global.me.say('ouch! that didn\'t work');
 		}
 
-		// Create an evaluation context that describes the how the code is to be executed.
-		var x = interpreter.createExecutionContext();
-
-		// Asynchronous running is prefered, so that tailspin execution does not block the browser.
-		x.asynchronous = true;
-
-		// A very simple control function that outputs the node line number and value.
-		x.control = function(n, x, next, prev) {
-			// var value = "";
-			// if (typeof n.value === "string" || typeof n.value === "number") {
-			//     value = " '" + n.value + "'";
-			// }
-			// consoleLog(n.lineno + ": " + Tailspin.Definitions.tokens[n.type] + value);
-
-			// Continue execution.
-			if (interpreterRunning) {
-				next(prev);
-			}
-		};
-
-		// Run the code.
-		interpreter.evaluateInContext($('#code').val(), 'source', 0, x, returnFn, errorFn, null);
+		run($('#code').val());
 	}
 
 	function kill() {
-		interpreterRunning = false;
-		asyncRunning = false;
+		if (interpreterRunning) {
+			interpreterRunning = false;
+			asyncRunning = false;
+			say('instance stopped');
+		}
 	}
 
 	function getScriptCount() {
@@ -191,6 +182,5 @@ var Interpreter = (function() {
 		selectScript: selectScript,
 		updateSelectedScript: updateSelectedScript,
 		kill: kill,
-		loadScripts: loadScripts,
 	};
 })();
