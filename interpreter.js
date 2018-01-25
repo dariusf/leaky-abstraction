@@ -110,6 +110,9 @@ continuously(function() {
       function continuously(f) {
         asyncRunning = true;
         function run() {
+          if (Main.isPaused()) {
+            return setTimeout(run, 100);
+          }
           var continueRunning = f();
           asyncRunning = asyncRunning && continueRunning;
           if (asyncRunning && continueRunning) {

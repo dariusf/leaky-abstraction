@@ -24,6 +24,7 @@ var Main = (function() {
 
     var platformsGroup, starsGroup, fireballGroup;
     var guiGroup;
+    let everythingPaused = false;
 
     function create() {
         game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -171,6 +172,7 @@ var Main = (function() {
         fireballGroup.forEach(function(star) {
             star.body.moves = false;
         }, this);
+        everythingPaused = true;
     }
 
     function unpauseObjects() {
@@ -181,10 +183,12 @@ var Main = (function() {
         fireballGroup.forEach(function(star) {
             star.body.moves = true;
         }, this);
+        everythingPaused = false;
     }
 
     return {
         pauseObjects: pauseObjects,
         unpauseObjects: unpauseObjects,
+        isPaused: () => everythingPaused,
     };
 })();
