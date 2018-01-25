@@ -149,7 +149,7 @@ continuously(function() {
       interpreter.global.me.say('ouch! that didn\'t work');
     }
 
-    run($('#code').val());
+    run(editor.getValue());
   }
 
   function kill() {
@@ -171,7 +171,7 @@ continuously(function() {
 
   function updateSelectedScript() {
     if (selectedScript >= 0) {
-      scripts[selectedScript] = $('#code').val();
+      scripts[selectedScript] = editor.getValue();
     }
   }
 

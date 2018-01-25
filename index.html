@@ -1,26 +1,60 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>Programming game</title>
-		<script type="text/javascript" src="lib/phaser.min.js"></script>
-		<script type="text/javascript" src="lib/jquery-1.11.0.min.js"></script>
+  <head>
+    <title>Programming game</title>
+    <script type="text/javascript" src="lib/phaser.min.js"></script>
+    <script type="text/javascript" src="lib/jquery-1.11.0.min.js"></script>
 
-		<script type="text/javascript" src="main.js"></script>
-		<script type="text/javascript" src="gui.js"></script>
-		<script type="text/javascript" src="interpreter.js"></script>
-	</head>
-	<body>
-		<div id="game" style="float:left;"></div>
-		<textarea id="code" rows="35" cols="80" placeholder="Your code here" style="float:left;"></textarea>
-		<span style="float:left; max-width: 30em;">
-			<p>The scripts are now diamonds! Click to edit them, use the mouse to drag them onto objects to activate them, and press <key>Esc</key> to end their execution.</p>
-			<p>Controls:</p>
-			<ul>
-				<li>WASD/arrow keys to move</li>
-				<li>Esc to stop the interpreter</li>
-				<li>Mouse to use/select scripts</li>
-				<li>Keyboard to edit scripts</li>
-			</ul>
-		</span>
-	</body>
+    <style>
+      #editor-container {
+        width: 700px;
+        height: 400px;
+        position: relative;
+        float: left;
+        border: solid black 1px;
+      }
+      #editor {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
+    </style>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.9/ace.js"></script>
+
+    <script type="text/javascript" src="main.js"></script>
+    <script type="text/javascript" src="gui.js"></script>
+    <script type="text/javascript" src="interpreter.js"></script>
+  </head>
+  <body>
+    <div id="game" style="float:left;"></div>
+    <div id="editor-container">
+      <div id="editor"></div>
+    </div>
+    <script type="text/javascript">
+      var editor = ace.edit("editor");
+      editor.setTheme("ace/theme/xcode");
+      // editor.setKeyboardHandler("ace/keyboard/vim");
+      editor.setHighlightActiveLine(false);
+      editor.setShowPrintMargin(false);
+      editor.session.setOptions({
+        mode: "ace/mode/javascript",
+        tabSize: 2,
+        useSoftTabs: true,
+      });
+      editor.renderer.setOption('showLineNumbers', false);
+    </script>
+    <div style="float:left; max-width: 30em;">
+      <p>The scripts are now diamonds! Click to edit them, use the mouse to drag them onto objects to activate them, and press <key>Esc</key> to end their execution.</p>
+      <p>Controls:</p>
+      <ul>
+        <li>WASD/arrow keys to move</li>
+        <li>Esc to stop the interpreter</li>
+        <li>Mouse to use/select scripts</li>
+        <li>Keyboard to edit scripts</li>
+      </ul>
+    </div>
+  </body>
 </html>

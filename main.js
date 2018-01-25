@@ -43,12 +43,6 @@ var Main = (function() {
 
     function initControls() {
         cursors = game.input.keyboard.createCursorKeys();
-        $('#code').blur(function() {
-            game.input.keyboard.disabled = false;
-        });
-        $('#code').focus(function() {
-            game.input.keyboard.disabled = true;
-        });
     }
 
     function createEmitter (x, y) {

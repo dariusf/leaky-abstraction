@@ -22,7 +22,9 @@ var GUI = (function() {
     initDarken();
     RepoPanel.init();
 
-    $('#code').bind('input propertychange', Interpreter.updateSelectedScript);
+    editor.getSession().on('change', function(e) {
+      Interpreter.updateSelectedScript();
+    });
   }
 
   function initDrag() {
@@ -110,7 +112,7 @@ var GUI = (function() {
       drag.select(sprite);
       Main.pauseObjects();
       darken();
-      $('#code').val(Interpreter.selectScript(index));
+      editor.setValue(Interpreter.selectScript(index), 1);
     }, this);
     button.events.onInputUp.add(function(sprite, mouse) {
       drag.done();
