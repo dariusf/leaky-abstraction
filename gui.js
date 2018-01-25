@@ -81,12 +81,9 @@ var GUI = (function() {
 
         var leftBox = x < 800 - PANEL_WIDTH || y > 600 - PANEL_HEIGHT;
 
-        console.log('leftBox', leftBox, x, y);
-
         if (!leftBox) return;
 
         if (!closest) {
-          // console.log('closest is null!');
           Interpreter.executeScriptOn(null);
         }
         else {
