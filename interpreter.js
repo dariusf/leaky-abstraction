@@ -133,17 +133,15 @@ continuously(function() {
       },
     });
 
-    // Callback functions for evaluation.
-    function returnFn(result) {
-      console.log("output", JSON.stringify(result));
+    function uponError(result) {
+      say('ouch! that didn\'t work');
     }
 
-    function errorFn(result) {
-      console.log("ERROR:", result);
-      interpreter.global.me.say('ouch! that didn\'t work');
+    try {
+      run(editor.getValue());
+    } catch (e) {
+      uponError(e);
     }
-
-    run(editor.getValue());
   }
 
   function kill() {
