@@ -17,7 +17,6 @@ continuously(function() {
 
   var selectedScript = -1;
 
-  var interpreterRunning = false;
   var asyncRunning = false;
 
   function loadScripts(game) {
@@ -66,11 +65,10 @@ continuously(function() {
 
     target = target || {};
 
-    if (interpreterRunning || asyncRunning) {
+    if (asyncRunning) {
       say('the previous instance is still running');
       return; // only 1 instance runs at a time
     }
-    interpreterRunning = true;
 
     let run = (function(code) {
 
@@ -119,8 +117,6 @@ continuously(function() {
           }
         }
         run();
-
-        // return interpreter.global;
       }
 
       eval(code);
@@ -140,12 +136,10 @@ continuously(function() {
     // Callback functions for evaluation.
     function returnFn(result) {
       console.log("output", JSON.stringify(result));
-      interpreterRunning = false;
     }
 
     function errorFn(result) {
       console.log("ERROR:", result);
-      interpreterRunning = false;
       interpreter.global.me.say('ouch! that didn\'t work');
     }
 
@@ -153,8 +147,7 @@ continuously(function() {
   }
 
   function kill() {
-    if (interpreterRunning) {
-      interpreterRunning = false;
+    if (asyncRunning) {
       asyncRunning = false;
       say('instance stopped');
     }
