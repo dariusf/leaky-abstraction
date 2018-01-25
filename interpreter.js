@@ -114,6 +114,8 @@ continuously(function() {
           asyncRunning = asyncRunning && continueRunning;
           if (asyncRunning && continueRunning) {
             setTimeout(run, 100);
+          } else {
+            asyncRunning = false;
           }
         }
         run();
