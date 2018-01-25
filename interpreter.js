@@ -66,8 +66,8 @@ continuously(function() {
     target = target || {};
 
     if (asyncRunning) {
-      say('the previous instance is still running');
-      return; // only 1 instance runs at a time
+      say('only one script can run at a time');
+      return;
     }
 
     let run = (function(code) {
@@ -139,7 +139,7 @@ continuously(function() {
     });
 
     function uponError(result) {
-      say('ouch! that didn\'t work');
+      say("Ouch! That didn't work!");
     }
 
     try {
@@ -152,7 +152,7 @@ continuously(function() {
   function kill() {
     if (asyncRunning) {
       asyncRunning = false;
-      say('instance stopped');
+      say('script stopped');
     }
   }
 
